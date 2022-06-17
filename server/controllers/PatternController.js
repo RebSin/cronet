@@ -5,9 +5,8 @@ const router = express.Router()
 // CREATE A pattern
 router.post('/', (req, res) => {
   const { name, description, steps } = req.body
-  const sql = `INSERT INTO patterns (name, description, steps) VALUES ('${name}', '${description}', '${steps}')`
   connection.query(
-    sql,
+    'INSERT INTO patterns (name, description, steps) VALUES (?, ?, ?)', [name, description, steps],
     (err, results) => {
       if (!err) {
         res.send(results)
@@ -21,9 +20,8 @@ router.post('/', (req, res) => {
 
 // GET ALL patterns
 router.get('/', (req, res) => {
-  const sql = 'SELECT * FROM patterns'
   connection.query(
-    sql,
+    'SELECT * FROM patterns',
     (err, results) => {
       if (!err) {
         res.send(results)
@@ -34,4 +32,36 @@ router.get('/', (req, res) => {
   )
 })
 
+// UPDATE A pattern
+router.put('/', (req, res) => {
+  const id = req.body.id
+  const name = req.body.name
+  connection.query(
+    'UPDATE patterns SET name = ? WHERE id = ?', [name, id],
+    (err, results) => {
+      if (!err) {
+        res.send(results)
+        console.log('Successfully updated pattern ' + req.body.name)
+      } else {
+        console.log(err)
+      }
+    }
+  )
+})
+
+// DELETE A pattern
+router.delete('/:id', (req, res) => {
+  const id = req.params.id
+  connection.query(
+    'DELETE FROM patterns WHERE id = ?', id,
+    (err, results) => {
+      if (!err) {
+        res.send(results)
+        console.log('Successfully deleted pattern ' + req.body.name)
+      } else {
+        console.log(err)
+      }
+    }
+  )
+})
 module.exports = router
